@@ -30,6 +30,12 @@
       }
     mode: '0644'
 
+- name: Ensure LaunchAgents directory exists
+  ansible.builtin.file:
+    path: "{{ ansible_facts.env.HOME }}/Library/LaunchAgents"
+    state: directory
+    mode: '0755'
+
 - name: Copy launchd plist for colima service
   ansible.builtin.template:
     src: homebrew.mxcl.colima.plist.j2
