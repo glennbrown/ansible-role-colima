@@ -1,0 +1,14 @@
+---
+# Default variables for ansible-role-colima
+colima_packages:
+  - colima
+  - lima-additional-guestagents
+  - docker
+  - docker-compose
+  - docker-buildx
+  - docker-completion
+
+colima_cpus: "{{ ansible_facts.processor_vcpus }}"
+colima_memory: "{{ [ansible_facts.memtotal_mb // 2048, 8] | min }}" # colima defaults to GB
+colima_disk: 100 # colima defaults to GB
+colima_arch: "{{ 'aarch64' if ansible_facts.architecture == 'arm64' else ansible_facts.architecture }}"

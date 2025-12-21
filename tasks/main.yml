@@ -1,0 +1,38 @@
+---
+# Tasks for ansible-role-colima
+
+- name: Ensure running on macOS
+  ansible.builtin.assert:
+    that: ansible_facts.system == 'Darwin'
+    fail_msg: "This role only supports macOS (Darwin)."
+
+- name: Install Homebrew packages for Colima and Docker
+  community.general.homebrew:
+    name: "{{ item }}"
+    state: present
+    update_homebrew: yes
+  loop: "{{ colima_packages }}"
+
+- name: Ensure Docker config directory exists
+  ansible.builtin.file:
+    path: "{{ ansible_facts.env.HOME }}/.docker"
+    state: directory
+    mode: '0755'
+
+- name: Write Docker config.json with cliPluginsExtraDirs
+  ansible.builtin.copy:
+    dest: "{{ ansible_facts.env.HOME }}/.docker/config.json"
+    content: |
+      {
+        "cliPluginsExtraDirs": [
+          "/opt/homebrew/lib/docker/cli-plugins"
+        ]
+      }
+    mode: '0644'
+
+- name: Copy launchd plist for colima service
+  ansible.builtin.template:
+    src: homebrew.mxcl.colima.plist.j2
+    dest: "{{ ansible_facts.env.HOME }}/Library/LaunchAgents/homebrew.mxcl.colima.plist"
+    mode: '0644'
+  notify: restart colima
