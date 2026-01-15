@@ -7,8 +7,95 @@ colima_packages:
   - docker-compose
   - docker-buildx
   - docker-completion
+  - docker-credential-helper
 
+colima_start_service: true
+
+# Default to amount of cpu's in host machine
 colima_cpus: "{{ ansible_facts.processor_vcpus }}"
-colima_memory: "{{ [ansible_facts.memtotal_mb // 2048, 8] | min }}" # colima defaults to GB
-colima_disk: 100 # colima defaults to GB
+# Default to half of system memory, capped at 8GB
+colima_memory: "{{ [ansible_facts.memtotal_mb // 2048, 8] | min }}"
+# Default to 100GB disk
+colima_disk: 100
+# Detect architecture of host machine
 colima_arch: "{{ 'aarch64' if ansible_facts.architecture == 'arm64' else ansible_facts.architecture }}"
+# Default to docker runtime
+colima_runtime: docker
+# Virtual machine type
+colima_vmtype: "{{ 'vz' if (ansible_facts.distribution == 'MacOSX' and ansible_facts.distribution_major_version is version('13', '>=')) else 'qemu' }}"
+# Enable rosetta for amd64 emulation on M series macs with vz
+colima_rosetta: "{{ colima_vmtype == 'vz' and ansible_facts.architecture == 'arm64' }}"
+# Enable nested virtualization on M3 macs with vz
+colima_nested_virtualization: "{{ ansible_facts.processor | join(' ') is search('Apple M([3-9]|[1-9][0-9])') }}"
+# Enable binfmt foreign architecture emulation when rosetta is not available
+colima_binfmt: "{{ not colima_rosetta }}"
+# Mount type, default to virtiofs for vz and 9p for qemu
+colima_mount_type: "{{ 'virtiofs' if colima_vmtype == 'vz' else '9p' }}"
+# Propgate inotify events to the VM
+colima_mount_inotify: true
+# Colima CPU type (only for qemu), buy default use host CPU
+colima_cpu_type: ""
+# Colima provision scripts
+# Provisioning scripts are executed on startup and therefore needs to be idempotent.
+# EXAMPLE - script executed as root
+# colima_provision: |
+#   - mode: system
+#     script: apt-get install htop vim
+#
+# EXAMPLE - script executed as user
+# colima_provision: |
+#   - mode: user
+#     script: |
+#       [ -f ~/.provision ] && exit 0;
+#       echo provisioning as $USER...
+#       touch ~/.provision
+#
+colima_provision: []
+# Colima ssh config 
+colima_ssh_config: true
+# Colima ssh port, default to 0 (random available port)
+colima_ssh_port: ""
+# Colima mounts
+# Match Docker Desktop defaults of /Users and /Volumes on macOS
+colima_mounts: |
+  - location: /Users
+    writable: true
+  - location: /Volumes
+    writable: true
+# Custom disk image path, empty for default    
+colima_disk_image: ""
+# Colima root disk size in GiB
+colima_root_disk: '20'
+# Colima environment variables
+# EXAMPLE
+# colima_env: |
+#   KEY: value
+#   ANOTHER_KEY: another value
+colima_env: ""
+
+# Kubernetes 
+colima_kubernetes: false
+# This needs to exactly match a k3s version https://github.com/k3s-io/k3s/releases
+colima_kubernetes_version: ""
+colima_kubernetes_args: |
+  - --disable=traefik
+colima_kubernetes_port: ""
+
+# auto activate docker, kubernetes, etc
+colima_auto_activate: true
+
+# Colima network
+colima_network_address: ""
+colima_network_mode: ""
+colima_network_interface: "{{ ansible_facts.default_ipv4.interface }}"
+colima_network_preferredroute: ""
+colima_network_dns: ""
+colima_network_dnshosts: ""
+colima_hostaddresses: ""
+
+# Advanced configuration
+colima_forwardagent: ""
+colima_docker_extras: ""
+colima_port_forwarder: "grpc"
+
+# 

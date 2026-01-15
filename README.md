@@ -1,4 +1,4 @@
-# ansible-role-colima
+# Ansible Role: Colima for Docker on MacOS
 
 Role to install Colima, Docker and related Homebrew packages on macOS.
 
@@ -9,9 +9,8 @@ Include this role in your playbook:
 
 ```yaml
 - hosts: localhost
-  connection: local
   roles:
-    - role: glennbrown.ansible-role-colima
+    - role: glennbrown.colima
 ```
 
 Variables
@@ -31,5 +30,3 @@ Notes
 
 - This role uses the `community.general.homebrew` module; ensure the collection is available.
 - The role asserts it is running on macOS (Darwin).
-# ansible-role-colima
-Ansible Role to install and configure colima on macOS

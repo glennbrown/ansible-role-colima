@@ -1,0 +1,160 @@
+# Number of CPUs to be allocated to the virtual machine.
+cpu: {{ colima_cpus }}
+
+# Size of the disk in GiB to be allocated to the virtual machine for container data.
+# NOTE: value can only be increased after virtual machine has been created.
+disk: {{ colima_disk }}
+
+# Size of the memory in GiB to be allocated to the virtual machine.
+memory: {{ colima_memory }}
+
+# Architecture of the virtual machine (x86_64, aarch64, host).
+arch: {{ colima_arch }}
+
+# Container runtime to be used (docker, containerd).
+runtime: {{ colima_runtime }}
+
+# Set custom hostname for the virtual machine.
+hostname: colima
+
+# Kubernetes configuration for the virtual machine.
+kubernetes:
+  # Enable kubernetes.
+  enabled: {{ colima_kubernetes }}
+  # Kubernetes version to use.
+  version: {{ colima_kubernetes_version | default('v1.33.4+k3s1') }}
+  # Additional args to pass to k3s https://docs.k3s.io/cli/server
+  k3sArgs: {{ colima_kubernetes_args }}
+  # Kubernetes port to listen on
+  # A common port is 6443, though left unbound to ensure no port conflicts
+  port: {{ colima_kubernetes_port | default('0') }}
+
+# Auto-activate on the Host for client access.
+# Setting to true does the following on startup
+#  - sets as active Docker context (for Docker runtime).
+#  - sets as active Kubernetes context (if Kubernetes is enabled).
+#  - sets as active Incus remote (for Incus runtime).
+autoActivate: {{ colima_auto_activate }}
+
+# Network configurations for the virtual machine.
+network:
+  # Assign reachable IP address to the virtual machine.
+  # NOTE: this is currently macOS only and ignored on Linux.
+  address: {{ colima_network_address | default('false')}}
+  
+  # Network mode for the virtual machine (shared, bridged).
+  # NOTE: this is currently macOS only and ignored on Linux.
+  mode: {{ colima_network_mode | default('shared') }}
+  
+  # Network interface to use for bridged mode.
+  # This is only used when mode is set to bridged.
+  # NOTE: this is currently macOS only and ignored on Linux.
+  interface: {{ colima_network_interface }}
+  
+  # Use the assigned IP address as the preferred route for the VM.
+  # Note: this only has an effect when `address` is set to true.
+  preferredRoute: {{ colima_network_preferredroute | default('false') }}
+  
+  # Custom DNS resolvers for the virtual machine.
+  dns: {{ colima_network_dns }}
+  
+  # DNS hostnames to resolve to custom targets using the internal resolver.
+  # This setting has no effect if a custom DNS resolver list is supplied above.
+  # It does not configure the /etc/hosts files of any machine or container.
+  # The value can be an IP address or another host.
+  dnsHosts: {{ colima_network_dnshosts | default('{}') }}
+  
+  # Replicate host IP addresses in the VM. This enables port forwarding to specific
+  # host IP addresses.
+  #   e.g. `docker run --port 10.0.1.2:8080:8080 alpine` would only forward to the
+  #   specified IP address.
+  hostAddresses: {{ colima_network_hostaddresses | default('false') }}
+
+# ===================================================================== #
+# ADVANCED CONFIGURATION
+# ===================================================================== #
+
+# Forward the host's SSH agent to the virtual machine.
+forwardAgent: {{ colima_forward_agent | default('false') }}
+
+# Docker daemon configuration that maps directly to daemon.json.
+# https://docs.docker.com/engine/reference/commandline/dockerd/#daemon-configuration-file.
+# NOTE: some settings may affect Colima's ability to start docker. e.g. `hosts`.
+#
+# EXAMPLE - disable buildkit
+# docker:
+#   features:
+#     buildkit: false
+#
+# EXAMPLE - add insecure registries
+# docker:
+#   insecure-registries:
+#     - myregistry.com:5000
+#     - host.docker.internal:5000
+docker: {{ colima_docker_extras | default('{}') }}
+
+# Virtual Machine type (qemu, vz)
+vmType: {{ colima_vmtype }}
+
+# Port forwarder for the virtual machine (ssh, grpc).
+portForwarder: {{ colima_port_forwarder }}
+
+# Utilise rosetta for amd64 emulation (requires m1 mac and vmType `vz`)
+rosetta: {{ colima_rosetta }}
+
+# Enable foreign architecture emulation via binfmt (e.g. amd64 on arm64, arm64 on amd64)
+binfmt: {{ colima_binfmt }}
+
+# Enable nested virtualization for the virtual machine (requires m3 mac and vmType `vz`)
+nestedVirtualization: {{ colima_nested_virtualization }}
+
+# Volume mount driver for the virtual machine (virtiofs, 9p, sshfs).
+#
+# virtiofs is limited to macOS and vmType `vz`. It is the fastest of the options.
+#
+# 9p is the recommended and the most stable option for vmType `qemu`.
+#
+# sshfs is faster than 9p but the least reliable of the options (when there are lots
+# of concurrent reads or writes).
+mountType: {{ colima_mount_type }}
+
+# Propagate inotify file events to the VM.
+mountInotify: {{ colima_mount_inotify }}
+
+# The CPU type for the virtual machine (requires vmType `qemu`).
+cpuType: {{ colima_cpu_type }}
+
+# Custom provision scripts for the virtual machine.
+# Provisioning scripts are executed on startup and therefore needs to be idempotent.
+provision: {{ colima_provision }}
+
+# Modify ~/.ssh/config automatically to include a SSH config for the virtual machine.
+# SSH config will still be generated in $COLIMA_HOME/ssh_config regardless.
+sshConfig: {{ colima_ssh_config }}
+
+# The port number for the SSH server for the virtual machine.
+# When set to 0, a random available port is used.
+sshPort: {{ colima_ssh_port | default('0') }}
+
+# Configure volume mounts for the virtual machine.
+mounts: {{ colima_mounts }}
+
+# Specify a custom disk image for the virtual machine.
+# When not specified, Colima downloads an appropriate disk image from Github at
+# https://github.com/abiosoft/colima-core/releases.
+# The file path to a custom disk image can be specified to override the behaviour.
+diskImage: {{ colima_disk_image }}
+
+# Size of the disk in GiB for the root filesystem of the virtual machine.
+# This value is ignored if no runtime is in use. i.e. `none` runtime.
+rootDisk: {{ colima_root_disk }}
+
+# Environment variables for the virtual machine.
+#
+# EXAMPLE
+# env:
+#   KEY: value
+#   ANOTHER_KEY: another value
+#
+# Default: {}
+env: {{ colima_env | default('{}') }}

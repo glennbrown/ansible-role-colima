@@ -12,33 +12,33 @@
     state: present
     update_homebrew: yes
   loop: "{{ colima_packages }}"
+  notify: restart colima
 
-- name: Ensure Docker config directory exists
+- name: Ensure Docker and colima config directory exists
   ansible.builtin.file:
-    path: "{{ ansible_facts.env.HOME }}/.docker"
+    path: "{{ ansible_facts.env.HOME }}/{{ item }}"
     state: directory
     mode: '0755'
+  loop:
+    - .docker
+    - .colima/default
+
+- name: Write colima config file
+  ansible.builtin.template:
+    src: colima.yaml.j2
+    dest: "{{ ansible_facts.env.HOME }}/.colima/default/colima.yaml"
+    mode: '0644'
+  notify: restart colima
 
 - name: Write Docker config.json with cliPluginsExtraDirs
   ansible.builtin.copy:
     dest: "{{ ansible_facts.env.HOME }}/.docker/config.json"
     content: |
       {
+        "auths": {},
+        "credsStore": "osxkeychain",
         "cliPluginsExtraDirs": [
           "/opt/homebrew/lib/docker/cli-plugins"
         ]
       }
     mode: '0644'
-
-- name: Ensure LaunchAgents directory exists
-  ansible.builtin.file:
-    path: "{{ ansible_facts.env.HOME }}/Library/LaunchAgents"
-    state: directory
-    mode: '0755'
-
-- name: Copy launchd plist for colima service
-  ansible.builtin.template:
-    src: homebrew.mxcl.colima.plist.j2
-    dest: "{{ ansible_facts.env.HOME }}/Library/LaunchAgents/homebrew.mxcl.colima.plist"
-    mode: '0644'
-  notify: restart colima

@@ -1,6 +1,6 @@
 ---
 - name: Load and start colima service
   listen: restart colima
-  community.general.launchd:
-    name: homebrew.mxcl.colima
+  community.general.homebrew_services:
+    name: colima
     state: restarted
