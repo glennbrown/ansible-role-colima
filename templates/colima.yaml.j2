@@ -20,31 +20,32 @@ hostname: colima
 # Kubernetes configuration for the virtual machine.
 kubernetes:
   # Enable kubernetes.
-  enabled: {{ colima_kubernetes }}
+  enabled: {{ colima_kubernetes | lower }}
   # Kubernetes version to use.
-  version: {{ colima_kubernetes_version | default('v1.33.4+k3s1') }}
+  version: {{ colima_kubernetes_version }}
   # Additional args to pass to k3s https://docs.k3s.io/cli/server
-  k3sArgs: {{ colima_kubernetes_args }}
+  k3sArgs: 
+    {{ colima_kubernetes_args }}
   # Kubernetes port to listen on
   # A common port is 6443, though left unbound to ensure no port conflicts
-  port: {{ colima_kubernetes_port | default('0') }}
+  port: {{ colima_kubernetes_port }}
 
 # Auto-activate on the Host for client access.
 # Setting to true does the following on startup
 #  - sets as active Docker context (for Docker runtime).
 #  - sets as active Kubernetes context (if Kubernetes is enabled).
 #  - sets as active Incus remote (for Incus runtime).
-autoActivate: {{ colima_auto_activate }}
+autoActivate: {{ colima_auto_activate | lower }}
 
 # Network configurations for the virtual machine.
 network:
   # Assign reachable IP address to the virtual machine.
   # NOTE: this is currently macOS only and ignored on Linux.
-  address: {{ colima_network_address | default('false')}}
+  address: {{ colima_network_address | lower }}
   
   # Network mode for the virtual machine (shared, bridged).
   # NOTE: this is currently macOS only and ignored on Linux.
-  mode: {{ colima_network_mode | default('shared') }}
+  mode: {{ colima_network_mode  }}
   
   # Network interface to use for bridged mode.
   # This is only used when mode is set to bridged.
@@ -53,7 +54,7 @@ network:
   
   # Use the assigned IP address as the preferred route for the VM.
   # Note: this only has an effect when `address` is set to true.
-  preferredRoute: {{ colima_network_preferredroute | default('false') }}
+  preferredRoute: {{ colima_network_preferredroute | lower }}
   
   # Custom DNS resolvers for the virtual machine.
   dns: {{ colima_network_dns }}
@@ -62,20 +63,20 @@ network:
   # This setting has no effect if a custom DNS resolver list is supplied above.
   # It does not configure the /etc/hosts files of any machine or container.
   # The value can be an IP address or another host.
-  dnsHosts: {{ colima_network_dnshosts | default('{}') }}
+  dnsHosts: {{ colima_network_dnshosts }}
   
   # Replicate host IP addresses in the VM. This enables port forwarding to specific
   # host IP addresses.
   #   e.g. `docker run --port 10.0.1.2:8080:8080 alpine` would only forward to the
   #   specified IP address.
-  hostAddresses: {{ colima_network_hostaddresses | default('false') }}
+  hostAddresses: {{ colima_network_hostaddresses | lower }}
 
 # ===================================================================== #
 # ADVANCED CONFIGURATION
 # ===================================================================== #
 
 # Forward the host's SSH agent to the virtual machine.
-forwardAgent: {{ colima_forward_agent | default('false') }}
+forwardAgent: {{ colima_forward_agent | lower }}
 
 # Docker daemon configuration that maps directly to daemon.json.
 # https://docs.docker.com/engine/reference/commandline/dockerd/#daemon-configuration-file.
@@ -100,13 +101,13 @@ vmType: {{ colima_vmtype }}
 portForwarder: {{ colima_port_forwarder }}
 
 # Utilise rosetta for amd64 emulation (requires m1 mac and vmType `vz`)
-rosetta: {{ colima_rosetta }}
+rosetta: {{ colima_rosetta | lower }}
 
 # Enable foreign architecture emulation via binfmt (e.g. amd64 on arm64, arm64 on amd64)
-binfmt: {{ colima_binfmt }}
+binfmt: {{ colima_binfmt | lower }}
 
 # Enable nested virtualization for the virtual machine (requires m3 mac and vmType `vz`)
-nestedVirtualization: {{ colima_nested_virtualization }}
+nestedVirtualization: {{ colima_nested_virtualization | lower }}
 
 # Volume mount driver for the virtual machine (virtiofs, 9p, sshfs).
 #
@@ -119,7 +120,7 @@ nestedVirtualization: {{ colima_nested_virtualization }}
 mountType: {{ colima_mount_type }}
 
 # Propagate inotify file events to the VM.
-mountInotify: {{ colima_mount_inotify }}
+mountInotify: {{ colima_mount_inotify | lower }}
 
 # The CPU type for the virtual machine (requires vmType `qemu`).
 cpuType: {{ colima_cpu_type }}
@@ -130,14 +131,15 @@ provision: {{ colima_provision }}
 
 # Modify ~/.ssh/config automatically to include a SSH config for the virtual machine.
 # SSH config will still be generated in $COLIMA_HOME/ssh_config regardless.
-sshConfig: {{ colima_ssh_config }}
+sshConfig: {{ colima_ssh_config | lower }}
 
 # The port number for the SSH server for the virtual machine.
 # When set to 0, a random available port is used.
-sshPort: {{ colima_ssh_port | default('0') }}
+sshPort: {{ colima_ssh_port }}
 
 # Configure volume mounts for the virtual machine.
-mounts: {{ colima_mounts }}
+mounts: 
+  {{ colima_mounts }}
 
 # Specify a custom disk image for the virtual machine.
 # When not specified, Colima downloads an appropriate disk image from Github at
@@ -157,4 +159,4 @@ rootDisk: {{ colima_root_disk }}
 #   ANOTHER_KEY: another value
 #
 # Default: {}
-env: {{ colima_env | default('{}') }}
+env: {{ colima_env }}

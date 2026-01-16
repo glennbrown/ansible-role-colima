@@ -34,7 +34,7 @@ colima_mount_type: "{{ 'virtiofs' if colima_vmtype == 'vz' else '9p' }}"
 # Propgate inotify events to the VM
 colima_mount_inotify: true
 # Colima CPU type (only for qemu), buy default use host CPU
-colima_cpu_type: ""
+colima_cpu_type: "host"
 # Colima provision scripts
 # Provisioning scripts are executed on startup and therefore needs to be idempotent.
 # EXAMPLE - script executed as root
@@ -54,7 +54,7 @@ colima_provision: []
 # Colima ssh config 
 colima_ssh_config: true
 # Colima ssh port, default to 0 (random available port)
-colima_ssh_port: ""
+colima_ssh_port: '0'
 # Colima mounts
 # Match Docker Desktop defaults of /Users and /Volumes on macOS
 colima_mounts: |
@@ -63,7 +63,7 @@ colima_mounts: |
   - location: /Volumes
     writable: true
 # Custom disk image path, empty for default    
-colima_disk_image: ""
+colima_disk_image: '""'
 # Colima root disk size in GiB
 colima_root_disk: '20'
 # Colima environment variables
@@ -71,31 +71,31 @@ colima_root_disk: '20'
 # colima_env: |
 #   KEY: value
 #   ANOTHER_KEY: another value
-colima_env: ""
+colima_env: {}
 
 # Kubernetes 
 colima_kubernetes: false
 # This needs to exactly match a k3s version https://github.com/k3s-io/k3s/releases
-colima_kubernetes_version: ""
+colima_kubernetes_version: 'v1.33.4+k3s1'
 colima_kubernetes_args: |
   - --disable=traefik
-colima_kubernetes_port: ""
+colima_kubernetes_port: '0'
 
 # auto activate docker, kubernetes, etc
 colima_auto_activate: true
 
 # Colima network
-colima_network_address: ""
-colima_network_mode: ""
+colima_network_address: false
+colima_network_mode: "shared"
 colima_network_interface: "{{ ansible_facts.default_ipv4.interface }}"
-colima_network_preferredroute: ""
-colima_network_dns: ""
-colima_network_dnshosts: ""
-colima_hostaddresses: ""
+colima_network_preferredroute: false
+colima_network_dns: []
+colima_network_dnshosts: {}
+colima_hostaddresses: false
 
 # Advanced configuration
-colima_forwardagent: ""
-colima_docker_extras: ""
+colima_forwardagent: false
+colima_docker_extras: {}
 colima_port_forwarder: "grpc"
 
 # 
