@@ -139,7 +139,7 @@ sshPort: {{ colima_ssh_port }}
 
 # Configure volume mounts for the virtual machine.
 mounts: 
-  {{ colima_mounts }}
+  {{ colima_mounts | indent(2, first=False) }}
 
 # Specify a custom disk image for the virtual machine.
 # When not specified, Colima downloads an appropriate disk image from Github at
