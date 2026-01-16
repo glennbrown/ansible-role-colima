@@ -94,8 +94,6 @@ colima_network_dnshosts: {}
 colima_host_addresses: false
 
 # Advanced configuration
-colima_forwardagent: false
+colima_forward_agent: false
 colima_docker_extras: {}
 colima_port_forwarder: "grpc"
-
-# 
