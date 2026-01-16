@@ -91,7 +91,7 @@ colima_network_interface: "{{ ansible_facts.default_ipv4.interface }}"
 colima_network_preferredroute: false
 colima_network_dns: []
 colima_network_dnshosts: {}
-colima_hostaddresses: false
+colima_host_addresses: false
 
 # Advanced configuration
 colima_forwardagent: false

@@ -69,7 +69,7 @@ network:
   # host IP addresses.
   #   e.g. `docker run --port 10.0.1.2:8080:8080 alpine` would only forward to the
   #   specified IP address.
-  hostAddresses: {{ colima_network_hostaddresses | lower }}
+  hostAddresses: {{ colima_host_addresses | lower }}
 
 # ===================================================================== #
 # ADVANCED CONFIGURATION
