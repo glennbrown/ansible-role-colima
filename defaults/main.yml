@@ -26,7 +26,7 @@ colima_vmtype: "{{ 'vz' if (ansible_facts.distribution == 'MacOSX' and ansible_f
 # Enable rosetta for amd64 emulation on M series macs with vz
 colima_rosetta: "{{ colima_vmtype == 'vz' and ansible_facts.architecture == 'arm64' }}"
 # Enable nested virtualization on M3 macs with vz
-colima_nested_virtualization: "{{ ansible_processor is search('Apple M([3-9]|[1-9][0-9])') }}"
+colima_nested_virtualization: "{{ ansible_facts.processor is search('Apple M([3-9]|[1-9][0-9])') }}"
 # Enable binfmt foreign architecture emulation when rosetta is not available
 colima_binfmt: "{{ not colima_rosetta }}"
 # Mount type, default to virtiofs for vz and 9p for qemu
